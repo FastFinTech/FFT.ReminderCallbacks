@@ -5,13 +5,15 @@ namespace FFT.ReminderCallbacks;
 
 using FFT.IgnoreTasks;
 
-/// <inheritdoc />
-/// <remarks>
-/// Note this class self-disposes when it is garbage collected, so there is no guarantee that it will
-/// complete its callback if you drop references to it. In fact, its awaited task may result in <see cref="OperationCanceledException"/>
-/// when it is disposed due to the garbage collector activating its finalizer.
-/// </remarks>
-public sealed class ReminderAt : IReminderCallback
+/// <summary>
+/// Ensures the callback is fired at or after the given time, never slightly before the given time.
+/// Tests show that the callback is often up to 14ms late.
+/// You can call the <see cref="IDisposable.Dispose"/> method to cancel the callback.
+/// The IEventAt object automatically disposes itself after it makes it callback.
+/// IMPORTANT!! If the operating system is suspended and comes back alive after the given time,
+/// the callback will fire LATE! Your calling code needs to check for late callbacks due to the system waking up from suspension.
+/// </summary>
+public sealed class ReminderCallback : IDisposable
 {
   private readonly Action<ReminderCallbackArgs> _callback;
   private readonly CancellationTokenSource _disposed;
@@ -22,9 +24,9 @@ public sealed class ReminderAt : IReminderCallback
   private long _disposedFlag;
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="ReminderAt"/> class.
+  /// Initializes a new instance of the <see cref="ReminderCallback"/> class.
   /// </summary>
-  public ReminderAt(string reminderName, TimeStamp callbackTime, Action<ReminderCallbackArgs> callback)
+  public ReminderCallback(string reminderName, TimeStamp callbackTime, Action<ReminderCallbackArgs> callback)
   {
     ReminderName = reminderName;
     ReminderTime = callbackTime;
@@ -38,31 +40,42 @@ public sealed class ReminderAt : IReminderCallback
   }
 
   /// <summary>
-  /// Finalizes an instance of the <see cref="ReminderAt"/> class.
+  /// Finalizes an instance of the <see cref="ReminderCallback"/> class.
   /// </summary>
-  ~ReminderAt()
+  ~ReminderCallback()
   {
     Dispose();
   }
 
-  /// <inheritdoc />
+  /// <summary>
+  /// The name of the reminder.
+  /// </summary>
   public string ReminderName { get; }
 
-  /// <inheritdoc />
+  /// <summary>
+  /// The time that the event should be raised.
+  /// </summary>
   public TimeStamp ReminderTime { get; }
 
-  /// <inheritdoc />
+  /// <summary>
+  /// A task that completes when the event has been raised.
+  /// The task completes with an <see cref="OperationCanceledException"/>
+  /// if the event is disposed before it is triggered.
+  /// </summary>
   public Task<ReminderCallbackArgs> Task
       => _taskCompletionSource.Task;
 
-  /// <inheritdoc />
+  /// <summary>
+  /// Call this to initiate monitoring.
+  /// The reminder won't be raised unless this method has been called.
+  /// </summary>
   public void StartMonitoring()
   {
     if (Interlocked.CompareExchange(ref _startedFlag, 1, 0) == 1) throw new InvalidOperationException("Cannot be started more than once.");
     System.Threading.Tasks.Task.Run(Work).Ignore();
   }
 
-  /// <inheritdoc />
+  /// <inheritdoc/>
   public void Dispose()
   {
     if (Interlocked.CompareExchange(ref _disposedFlag, 1, 0) == 1) return;

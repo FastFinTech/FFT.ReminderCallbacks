@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Description>Callback events that fire at a given time.</Description>
   </PropertyGroup>
 
   <ItemGroup>

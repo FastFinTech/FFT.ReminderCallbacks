@@ -4,11 +4,12 @@
 namespace FFT.ReminderCallbacks;
 
 /// <summary>
-/// Use the fields in this class to check for late callbacks, possibly as a result of the system recovering from suspension or hibernation.
+/// Use the fields in this class to check for late callbacks,
+/// possibly as a result of the system recovering from suspension or hibernation.
 /// </summary>
 public sealed class ReminderCallbackArgs
 {
-  internal ReminderCallbackArgs(IReminderCallback sender, TimeStamp actualCallbackTime)
+  internal ReminderCallbackArgs(ReminderCallback sender, TimeStamp actualCallbackTime)
   {
     Sender = sender;
     ActualCallbackTime = actualCallbackTime;
@@ -17,7 +18,7 @@ public sealed class ReminderCallbackArgs
   /// <summary>
   /// The reminder object raising this reminder.
   /// </summary>
-  public IReminderCallback Sender { get; }
+  public ReminderCallback Sender { get; }
 
   /// <summary>
   /// The name of the reminder-raising object.
@@ -31,8 +32,8 @@ public sealed class ReminderCallbackArgs
 
   /// <summary>
   /// The actual time that the event was raised.
-  /// It can be late due to clock inaccuracies, cpu load, or due to the operating system being asleep (hibernated)
-  /// at the time of the event.
+  /// It can be late due to clock inaccuracies, cpu load, or due to the
+  /// operating system being asleep (hibernated) at the time of the event.
   /// </summary>
   public TimeStamp ActualCallbackTime { get; }
 }
