@@ -32,7 +32,7 @@
   <!-- ===================================== -->
   <ItemGroup>
     <!-- Place the package icon in the root of the nuget package -->
-    <None Include="$(SourceRoot)Icon.jpg" Pack="true" Visible="false" PackagePath="/" />
+    <None Include="$(MSBuildThisFileDirectory)Icon.jpg" Pack="true" Visible="false" PackagePath="/" />
   </ItemGroup>
 
   <PropertyGroup>
