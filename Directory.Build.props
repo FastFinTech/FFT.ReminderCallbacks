@@ -9,6 +9,7 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageIcon>Icon.jpg</PackageIcon>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
@@ -24,5 +25,19 @@
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
   </ItemGroup>
+
+  <!-- ===================================== -->
+  <!--            PACKAGE ICON               -->
+  <!-- ===================================== -->
+  <ItemGroup>
+    <!-- Place the package icon in the root of the nuget package -->
+    <None Include="$(SourceRoot)Icon.jpg" Pack="true" Visible="false" PackagePath="/" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- Package icon setting is relative to its location within the nuget package -->
+    <PackageIcon>Icon.jpg</PackageIcon>
+  </PropertyGroup>
+  <!-- ===================================== -->
 
 </Project>
